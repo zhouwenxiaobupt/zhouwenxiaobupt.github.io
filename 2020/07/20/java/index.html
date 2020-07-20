@@ -22,28 +22,35 @@
     var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Pisces","version":"8.0.0-rc.4","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}}};
   </script>
 
-  <meta property="og:type" content="website">
-<meta property="og:title" content="一帘秋水">
-<meta property="og:url" content="http://yoursite.com/index.html">
+  <meta name="description" content="【Collection、泛型】主要内容 Collection集合 迭代器 增强for 泛型  教学目标  能够说出集合与数组的区别  说出Collection集合的常用功能  能够使用迭代器对集合进行取元素  能够说出集合的使用细节  能够使用集合存储自定义类型  能够使用foreach循环遍历集合  能够使用泛型定义集合对象  能够理解泛型上下限  能够阐述泛型通配符的作用  第一章 Colle">
+<meta property="og:type" content="article">
+<meta property="og:title" content="集合和泛型">
+<meta property="og:url" content="http://yoursite.com/2020/07/20/java/index.html">
 <meta property="og:site_name" content="一帘秋水">
+<meta property="og:description" content="【Collection、泛型】主要内容 Collection集合 迭代器 增强for 泛型  教学目标  能够说出集合与数组的区别  说出Collection集合的常用功能  能够使用迭代器对集合进行取元素  能够说出集合的使用细节  能够使用集合存储自定义类型  能够使用foreach循环遍历集合  能够使用泛型定义集合对象  能够理解泛型上下限  能够阐述泛型通配符的作用  第一章 Colle">
 <meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://yoursite.com/2020/07/20/java/img%5CCollection%E9%9B%86%E5%90%88%E4%BD%93%E7%B3%BB%E5%9B%BE.png">
+<meta property="og:image" content="http://yoursite.com/2020/07/20/java/img%5C%E8%BF%AD%E4%BB%A3%E5%99%A8%E5%8E%9F%E7%90%86%E5%9B%BE.bmp">
+<meta property="article:published_time" content="2020-07-20T15:31:08.000Z">
+<meta property="article:modified_time" content="2020-07-20T15:32:44.636Z">
 <meta property="article:author" content="周文校">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://yoursite.com/2020/07/20/java/img%5CCollection%E9%9B%86%E5%90%88%E4%BD%93%E7%B3%BB%E5%9B%BE.png">
 
-<link rel="canonical" href="http://yoursite.com/">
+<link rel="canonical" href="http://yoursite.com/2020/07/20/java/">
 
 
 <script class="page-configurations">
   // https://hexo.io/docs/variables.html
   CONFIG.page = {
     sidebar: "",
-    isHome : true,
-    isPost : false,
+    isHome : false,
+    isPost : true,
     lang   : 'en'
   };
 </script>
 
-  <title>一帘秋水</title>
+  <title>集合和泛型 | 一帘秋水</title>
   
 
 
@@ -132,7 +139,7 @@
 
   <aside class="sidebar">
 
-    <div class="sidebar-inner sidebar-overview-active">
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
       <ul class="sidebar-nav">
         <li class="sidebar-nav-toc">
           Table of Contents
@@ -144,6 +151,7 @@
 
       <!--noindex-->
       <section class="post-toc-wrap sidebar-panel">
+          <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#【Collection、泛型】"><span class="nav-number">1.</span> <span class="nav-text">【Collection、泛型】</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#主要内容"><span class="nav-number">1.1.</span> <span class="nav-text">主要内容</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#教学目标"><span class="nav-number">1.2.</span> <span class="nav-text">教学目标</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#第一章-Collection集合"><span class="nav-number">2.</span> <span class="nav-text">第一章 Collection集合</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-1-集合概述"><span class="nav-number">2.1.</span> <span class="nav-text">1.1 集合概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-2-集合框架"><span class="nav-number">2.2.</span> <span class="nav-text">1.2  集合框架</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-3-Collection-常用功能"><span class="nav-number">2.3.</span> <span class="nav-text">1.3 Collection 常用功能</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#第二章-Iterator迭代器"><span class="nav-number">2.4.</span> <span class="nav-text">第二章 Iterator迭代器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-1-Iterator接口"><span class="nav-number">2.5.</span> <span class="nav-text">2.1 Iterator接口</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-2-迭代器的实现原理"><span class="nav-number">2.6.</span> <span class="nav-text">2.2 迭代器的实现原理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-3-增强for"><span class="nav-number">2.7.</span> <span class="nav-text">2.3 增强for</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#练习1：遍历数组"><span class="nav-number">2.7.0.1.</span> <span class="nav-text">练习1：遍历数组</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#练习2-遍历集合"><span class="nav-number">2.7.0.2.</span> <span class="nav-text">练习2:遍历集合</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#第三章-泛型"><span class="nav-number">3.</span> <span class="nav-text">第三章 泛型</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#3-1-泛型概述"><span class="nav-number">3.1.</span> <span class="nav-text">3.1  泛型概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-2-使用泛型的好处"><span class="nav-number">3.2.</span> <span class="nav-text">3.2  使用泛型的好处</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-3-泛型的定义与使用"><span class="nav-number">3.3.</span> <span class="nav-text">3.3  泛型的定义与使用</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#定义和使用含有泛型的类"><span class="nav-number">3.3.1.</span> <span class="nav-text">定义和使用含有泛型的类</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#含有泛型的方法"><span class="nav-number">3.3.2.</span> <span class="nav-text">含有泛型的方法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#含有泛型的接口"><span class="nav-number">3.3.3.</span> <span class="nav-text">含有泛型的接口</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-4-泛型通配符"><span class="nav-number">3.4.</span> <span class="nav-text">3.4  泛型通配符</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#通配符基本使用"><span class="nav-number">3.4.0.1.</span> <span class="nav-text">通配符基本使用</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#通配符高级使用—-受限泛型"><span class="nav-number">3.4.0.2.</span> <span class="nav-text">通配符高级使用—-受限泛型</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#第四章-集合综合案例"><span class="nav-number">4.</span> <span class="nav-text">第四章 集合综合案例</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#4-1-案例介绍"><span class="nav-number">4.1.</span> <span class="nav-text">4.1 案例介绍</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-2-案例分析"><span class="nav-number">4.2.</span> <span class="nav-text">4.2 案例分析</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-3-代码实现"><span class="nav-number">4.3.</span> <span class="nav-text">4.3 代码实现</span></a></li></ol></li></ol></div>
       </section>
       <!--/noindex-->
 
@@ -198,9 +206,10 @@
       <div class="main-inner">
         
 
-        <div class="content index posts-expand">
+        <div class="content post posts-expand">
           
-      
+
+    
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
@@ -216,10 +225,9 @@
       <meta itemprop="name" content="一帘秋水">
     </span>
       <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/07/20/java/" class="post-title-link" itemprop="url">集合和泛型</a>
-        </h2>
+        <h1 class="post-title" itemprop="name headline">
+          集合和泛型
+        </h1>
 
         <div class="post-meta">
             <span class="post-meta-item">
@@ -243,7 +251,7 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="【Collection、泛型】"><a href="#【Collection、泛型】" class="headerlink" title="【Collection、泛型】"></a>【Collection、泛型】</h1><h2 id="主要内容"><a href="#主要内容" class="headerlink" title="主要内容"></a>主要内容</h2><ul>
+        <h1 id="【Collection、泛型】"><a href="#【Collection、泛型】" class="headerlink" title="【Collection、泛型】"></a>【Collection、泛型】</h1><h2 id="主要内容"><a href="#主要内容" class="headerlink" title="主要内容"></a>主要内容</h2><ul>
 <li>Collection集合</li>
 <li>迭代器</li>
 <li>增强for</li>
@@ -445,91 +453,30 @@
 <h2 id="4-3-代码实现"><a href="#4-3-代码实现" class="headerlink" title="4.3 代码实现"></a>4.3 代码实现</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> java.util.ArrayList;</span><br><span class="line"><span class="keyword">import</span> java.util.Collections;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Poker</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        <span class="comment">/*</span></span><br><span class="line"><span class="comment">        * 1: 准备牌操作</span></span><br><span class="line"><span class="comment">        */</span></span><br><span class="line">        <span class="comment">//1.1 创建牌盒 将来存储牌面的 </span></span><br><span class="line">        ArrayList&lt;String&gt; pokerBox = <span class="keyword">new</span> ArrayList&lt;String&gt;();</span><br><span class="line">        <span class="comment">//1.2 创建花色集合</span></span><br><span class="line">        ArrayList&lt;String&gt; colors = <span class="keyword">new</span> ArrayList&lt;String&gt;();</span><br><span class="line"></span><br><span class="line">        <span class="comment">//1.3 创建数字集合</span></span><br><span class="line">        ArrayList&lt;String&gt; numbers = <span class="keyword">new</span> ArrayList&lt;String&gt;();</span><br><span class="line"></span><br><span class="line">        <span class="comment">//1.4 分别给花色 以及 数字集合添加元素</span></span><br><span class="line">        colors.add(<span class="string">"♥"</span>);</span><br><span class="line">        colors.add(<span class="string">"♦"</span>);</span><br><span class="line">        colors.add(<span class="string">"♠"</span>);</span><br><span class="line">        colors.add(<span class="string">"♣"</span>);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">2</span>;i&lt;=<span class="number">10</span>;i++)&#123;</span><br><span class="line">            numbers.add(i+<span class="string">""</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        numbers.add(<span class="string">"J"</span>);</span><br><span class="line">        numbers.add(<span class="string">"Q"</span>);</span><br><span class="line">        numbers.add(<span class="string">"K"</span>);</span><br><span class="line">        numbers.add(<span class="string">"A"</span>);</span><br><span class="line">        <span class="comment">//1.5 创造牌  拼接牌操作</span></span><br><span class="line">        <span class="comment">// 拿出每一个花色  然后跟每一个数字 进行结合  存储到牌盒中</span></span><br><span class="line">        <span class="keyword">for</span> (String color : colors) &#123;</span><br><span class="line">            <span class="comment">//color每一个花色 </span></span><br><span class="line">            <span class="comment">//遍历数字集合</span></span><br><span class="line">            <span class="keyword">for</span>(String number : numbers)&#123;</span><br><span class="line">                <span class="comment">//结合</span></span><br><span class="line">                String card = color+number;</span><br><span class="line">                <span class="comment">//存储到牌盒中</span></span><br><span class="line">                pokerBox.add(card);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">//1.6大王小王</span></span><br><span class="line">        pokerBox.add(<span class="string">"小☺"</span>);</span><br><span class="line">        pokerBox.add(<span class="string">"大☠"</span>);	  </span><br><span class="line">        <span class="comment">// System.out.println(pokerBox);</span></span><br><span class="line">        <span class="comment">//洗牌 是不是就是将  牌盒中 牌的索引打乱 </span></span><br><span class="line">        <span class="comment">// Collections类  工具类  都是 静态方法</span></span><br><span class="line">        <span class="comment">// shuffer方法   </span></span><br><span class="line">        <span class="comment">/*</span></span><br><span class="line"><span class="comment">         * static void shuffle(List&lt;?&gt; list) </span></span><br><span class="line"><span class="comment">         *     使用默认随机源对指定列表进行置换。 </span></span><br><span class="line"><span class="comment">         */</span></span><br><span class="line">        <span class="comment">//2:洗牌</span></span><br><span class="line">        Collections.shuffle(pokerBox);</span><br><span class="line">        <span class="comment">//3 发牌</span></span><br><span class="line">        <span class="comment">//3.1 创建 三个 玩家集合  创建一个底牌集合</span></span><br><span class="line">        ArrayList&lt;String&gt; player1 = <span class="keyword">new</span> ArrayList&lt;String&gt;();</span><br><span class="line">        ArrayList&lt;String&gt; player2 = <span class="keyword">new</span> ArrayList&lt;String&gt;();</span><br><span class="line">        ArrayList&lt;String&gt; player3 = <span class="keyword">new</span> ArrayList&lt;String&gt;();</span><br><span class="line">        ArrayList&lt;String&gt; dipai = <span class="keyword">new</span> ArrayList&lt;String&gt;();	  </span><br><span class="line"></span><br><span class="line">        <span class="comment">//遍历 牌盒  必须知道索引   </span></span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">0</span>;i&lt;pokerBox.size();i++)&#123;</span><br><span class="line">            <span class="comment">//获取 牌面</span></span><br><span class="line">            String card = pokerBox.get(i);</span><br><span class="line">            <span class="comment">//留出三张底牌 存到 底牌集合中</span></span><br><span class="line">            <span class="keyword">if</span>(i&gt;=<span class="number">51</span>)&#123;<span class="comment">//存到底牌集合中</span></span><br><span class="line">                dipai.add(card);</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                <span class="comment">//玩家1   %3  ==0</span></span><br><span class="line">                <span class="keyword">if</span>(i%<span class="number">3</span>==<span class="number">0</span>)&#123;</span><br><span class="line">                  	player1.add(card);</span><br><span class="line">                &#125;<span class="keyword">else</span> <span class="keyword">if</span>(i%<span class="number">3</span>==<span class="number">1</span>)&#123;<span class="comment">//玩家2</span></span><br><span class="line">                  	player2.add(card);</span><br><span class="line">                &#125;<span class="keyword">else</span>&#123;<span class="comment">//玩家3</span></span><br><span class="line">                  	player3.add(card);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">//看看</span></span><br><span class="line">        System.out.println(<span class="string">"令狐冲："</span>+player1);</span><br><span class="line">        System.out.println(<span class="string">"田伯光："</span>+player2);</span><br><span class="line">        System.out.println(<span class="string">"绿竹翁："</span>+player3);</span><br><span class="line">        System.out.println(<span class="string">"底牌："</span>+dipai);  </span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 
-      
     </div>
 
     
     
     
+
       <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/07/20/hello-world/">
+        
 
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="周文校">
-      <meta itemprop="description" content="">
-    </span>
 
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="一帘秋水">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/07/20/hello-world/" class="post-title-link" itemprop="url">Hello World</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2020-07-20 21:37:42" itemprop="dateCreated datePublished" datetime="2020-07-20T21:37:42+08:00">2020-07-20</time>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>Welcome to <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/" target="_blank" rel="noopener">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html" target="_blank" rel="noopener">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues" target="_blank" rel="noopener">GitHub</a>.</p>
-<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">"My New Post"</span></span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/writing.html" target="_blank" rel="noopener">Writing</a></p>
-<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/server.html" target="_blank" rel="noopener">Server</a></p>
-<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/generating.html" target="_blank" rel="noopener">Generating</a></p>
-<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/one-command-deployment.html" target="_blank" rel="noopener">Deployment</a></p>
-
-      
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/07/20/hello-world/" rel="prev" title="Hello World">
+      <i class="fa fa-chevron-left"></i> Hello World
+    </a></div>
+      <div class="post-nav-item"></div>
     </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
       </footer>
+    
   </article>
   
   
-  
-
-
   
 
 
