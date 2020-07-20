@@ -1,3 +1,7 @@
+body {
+  background: url("/images/background.jpg");
+  background-attachment: fixed;
+}
 :root {
   --body-bg-color: #f5f7f9;
   --content-bg-color: #fff;
