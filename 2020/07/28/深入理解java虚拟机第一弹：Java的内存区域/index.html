@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+  
+  <link rel="stylesheet" href="/lib/animate-css/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Pisces","version":"8.0.0-rc.4","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}}};
+  </script>
+
+  <meta name="description" content="深入理解java 虚拟机1：jvm  的内存结构 1.1程序计数器：程序计数器： 线程私有。程序计数器是一块较小的内存空间，可以看作是当前线程所执行的字节码的行号指示器。字节码解释器工作时就是通过改变这个计数器的值来选取下一条需要执行的字节码指令，分支、循环、跳转、异常处理、线程恢复登记处功能都需要依赖这个计数器的值来完成。为了线程切换后能恢复到正确的执行位置，每个线程都需要有一个独立的程序计数器">
+<meta property="og:type" content="article">
+<meta property="og:title" content="深入理解java虚拟机第一弹：Java的内存区域">
+<meta property="og:url" content="http://yoursite.com/2020/07/28/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3java%E8%99%9A%E6%8B%9F%E6%9C%BA%E7%AC%AC%E4%B8%80%E5%BC%B9%EF%BC%9AJava%E7%9A%84%E5%86%85%E5%AD%98%E5%8C%BA%E5%9F%9F/index.html">
+<meta property="og:site_name" content="一帘秋水">
+<meta property="og:description" content="深入理解java 虚拟机1：jvm  的内存结构 1.1程序计数器：程序计数器： 线程私有。程序计数器是一块较小的内存空间，可以看作是当前线程所执行的字节码的行号指示器。字节码解释器工作时就是通过改变这个计数器的值来选取下一条需要执行的字节码指令，分支、循环、跳转、异常处理、线程恢复登记处功能都需要依赖这个计数器的值来完成。为了线程切换后能恢复到正确的执行位置，每个线程都需要有一个独立的程序计数器">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://zhou1234.oss-cn-beijing.aliyuncs.com/img/image-20200728223819939.png">
+<meta property="og:image" content="https://img-blog.csdn.net/20171007110030253?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvZnV6aG9uZ21pbjA1/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast">
+<meta property="og:image" content="https://img-blog.csdn.net/20171007113141903?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvZnV6aG9uZ21pbjA1/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast">
+<meta property="og:image" content="https://img-blog.csdn.net/20171007112907161?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvZnV6aG9uZ21pbjA1/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast">
+<meta property="article:published_time" content="2020-07-28T15:14:53.000Z">
+<meta property="article:modified_time" content="2020-07-28T15:15:38.409Z">
+<meta property="article:author" content="周文校">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://zhou1234.oss-cn-beijing.aliyuncs.com/img/image-20200728223819939.png">
+
+<link rel="canonical" href="http://yoursite.com/2020/07/28/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3java%E8%99%9A%E6%8B%9F%E6%9C%BA%E7%AC%AC%E4%B8%80%E5%BC%B9%EF%BC%9AJava%E7%9A%84%E5%86%85%E5%AD%98%E5%8C%BA%E5%9F%9F/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>深入理解java虚拟机第一弹：Java的内存区域 | 一帘秋水</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <main class="main">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+        <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+        <span class="toggle-line toggle-line-first"></span>
+        <span class="toggle-line toggle-line-middle"></span>
+        <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">一帘秋水</h1>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">0</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">0</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">2</span></a>
+
+  </li>
+        <li class="menu-item menu-item-schedule">
+
+    <a href="/schedule/" rel="section"><i class="fa fa-calendar fa-fw"></i>日程表</a>
+
+  </li>
+        <li class="menu-item menu-item-sitemap">
+
+    <a href="/sitemap.xml" rel="section"><i class="fa fa-sitemap fa-fw"></i>站点地图</a>
+
+  </li>
+        <li class="menu-item menu-item-commonweal">
+
+    <a href="/404/" rel="section"><i class="fa fa-heartbeat fa-fw"></i>公益 404</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <section class="post-toc-wrap sidebar-panel">
+          <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#深入理解java-虚拟机"><span class="nav-number">1.</span> <span class="nav-text">深入理解java 虚拟机</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1：jvm-的内存结构"><span class="nav-number">1.0.1.</span> <span class="nav-text">1：jvm  的内存结构</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-1程序计数器："><span class="nav-number">1.0.1.1.</span> <span class="nav-text">1.1程序计数器：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#1-2虚拟机栈："><span class="nav-number">1.0.1.2.</span> <span class="nav-text">1.2虚拟机栈：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#1-3本地方法栈"><span class="nav-number">1.0.1.3.</span> <span class="nav-text">1.3本地方法栈</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#1-4堆"><span class="nav-number">1.0.1.4.</span> <span class="nav-text">1.4堆</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#1-5方法区："><span class="nav-number">1.0.1.5.</span> <span class="nav-text">1.5方法区：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#1-6运行时常量池："><span class="nav-number">1.0.1.6.</span> <span class="nav-text">1.6运行时常量池：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#总结如下："><span class="nav-number">1.0.1.7.</span> <span class="nav-text">总结如下：</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#引申：为什么JVM要选用基于栈的架构？"><span class="nav-number">1.0.1.7.1.</span> <span class="nav-text">引申：为什么JVM要选用基于栈的架构？</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#栈是运行时的单位，而堆是存储的单位"><span class="nav-number">1.0.1.7.2.</span> <span class="nav-text">　　栈是运行时的单位，而堆是存储的单位</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#在Java中，Main函数就是栈的起始点，也是程序的起始点"><span class="nav-number">1.0.1.7.3.</span> <span class="nav-text">　　在Java中，Main函数就是栈的起始点，也是程序的起始点</span></a></li></ol></li></ol></li></ol></li></ol></li></ol></div>
+      </section>
+      <!--/noindex-->
+	  <iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=330 height=86 src="//music.163.com/outchain/player?type=2&id=520242026&auto=1&height=66"></iframe>
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">周文校</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">2</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/zhouwenxiaobupt" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;zhouwenxiaobupt" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:zhouwenxiao@bupt.edu.cn" title="E-Mail → mailto:zhouwenxiao@bupt.edu.cn" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+  <div class="cc-license animated" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
+  </div>
+
+
+
+      </section>
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </header>
+
+      
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div id="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+      <div class="main-inner">
+        
+
+        <div class="content post posts-expand">
+          
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/07/28/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3java%E8%99%9A%E6%8B%9F%E6%9C%BA%E7%AC%AC%E4%B8%80%E5%BC%B9%EF%BC%9AJava%E7%9A%84%E5%86%85%E5%AD%98%E5%8C%BA%E5%9F%9F/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="周文校">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="一帘秋水">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          深入理解java虚拟机第一弹：Java的内存区域
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2020-07-28 23:14:53 / 修改时间：23:15:38" itemprop="dateCreated datePublished" datetime="2020-07-28T23:14:53+08:00">2020-07-28</time>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>3.2k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>3 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="深入理解java-虚拟机"><a href="#深入理解java-虚拟机" class="headerlink" title="深入理解java 虚拟机"></a>深入理解java 虚拟机</h1><h3 id="1：jvm-的内存结构"><a href="#1：jvm-的内存结构" class="headerlink" title="1：jvm  的内存结构"></a>1：jvm  的内存结构</h3><p><img src="https://zhou1234.oss-cn-beijing.aliyuncs.com/img/image-20200728223819939.png" alt="image-20200728223819939"></p>
+<h4 id="1-1程序计数器："><a href="#1-1程序计数器：" class="headerlink" title="1.1程序计数器："></a>1.1程序计数器：</h4><p>程序计数器： 线程私有。程序计数器是一块较小的内存空间，可以看作是当前线程所执行的字节码的行号指示器。字节码解释器工作时就是通过改变这个计数器的值来选取下一条需要执行的字节码指令，分支、循环、跳转、异常处理、线程恢复登记处功能都需要依赖这个计数器的值来完成。为了线程切换后能恢复到正确的执行位置，每个线程都需要有一个独立的程序计数器，各条线程之间的计数器互不影响，独立存储。这类内存区域称为“线程私有”的内存。程序计数器，是唯一一个在java虚拟机规范中没有规定任何Out Of Memory Error的区域。</p>
+<a id="more"></a>
+
+<h4 id="1-2虚拟机栈："><a href="#1-2虚拟机栈：" class="headerlink" title="1.2虚拟机栈："></a>1.2虚拟机栈：</h4><p> 也是线程私有的，生命周期与线程相同。虚拟机栈描述的是Java方法执行的内存模型：每个方法在执行的同时，都会创建一个栈帧，用于存储局部变量表、操作数栈、动态链接、方法出口等信息。平常我们把java分为堆内存和栈内存，其中的“栈”就是现在讲的虚拟机栈，或者说是虚拟机栈中局部变量表部分。局部变量表所需的内存空间在编译期间完成分配，当进入一个方法时，这个方法需要在栈帧中分配多大的局部变量空间是完全确定的，在方法运行期间不会改变局部变量表的大小。</p>
+<p>　　对于java虚拟机栈，有两种异常情况：如果线程请求的栈深度大于虚拟机所允许的深度，将抛出StackOverflowError异常；如果虚拟机栈在动态扩展时，无法申请到足够的内存，就会抛出OutOfMemoryError。</p>
+<p>局部变量表存放了编译期可知的各种Java虚拟机基本数据类型（boolean、byte、char、short、int、float、long、double）、对象引用（reference类型，它并不等同于对象本身，可能是一个指向对象起始地址的引用指针，也可能是指向一个代表对象的句柄或者其他与此对象相关的位置）和returnAddress类型（指向了一条字节码指令的地址）。</p>
+<h4 id="1-3本地方法栈"><a href="#1-3本地方法栈" class="headerlink" title="1.3本地方法栈"></a>1.3本地方法栈</h4><p>本地方法栈（Native Method Stacks）与虚拟机栈所发挥的作用是非常相似的，其区别只是虚拟机栈为虚拟机执行Java方法（也就是字节码）服务，而本地方法栈则是为虚拟机使用到的本地（Native）方法服务。《Java虚拟机规范》对本地方法栈中方法使用的语言、使用方式与数据结构并没有任何强制规定，因此具体的虚拟机可以根据需要自由实现它，甚至有的Java虚拟机（譬如Hot-Spot虚拟机）直接就把本地方法栈和虚拟机栈合二为一。与虚拟机栈一样，本地方法栈也会在栈深度溢出或者栈扩展失败时分别抛出StackOverflowError和OutOfMemoryError异常</p>
+<h4 id="1-4堆"><a href="#1-4堆" class="headerlink" title="1.4堆"></a>1.4堆</h4><p>Java堆： 所有线程共享。Java堆在虚拟机启动时创建，是Java虚拟机所管理的内存中最大的一块。堆是用来存放对象的内存空间，几乎所有的对象都存储在堆中。同时java堆是垃圾收集器管理的主要区域，因此也被称为“GC堆”。从内存回收的角度来看，由于现在的收集器大都采用分代收集算法，所以Java堆可以细分为：新生代和老年代；再细分一点：Eden空间、From Survivor空间、To Survivor空间等。</p>
+<p>从内存分配角度来看，线程共享的Java堆可以划分出多个线程私有的分配缓冲区。但是不管怎么划分，哪个区域，存储的都是对象实例。</p>
+<p>Java堆物理上不需要连续的内存，只要逻辑上连续即可。但对于大对象（典型的如数组对象），多数虚拟机实现出于实现简单、存储高效的考虑，很可能会要求连续的内存空间.</p>
+<p>堆的大小既可以固定也可以扩展，但对于主流的虚拟机，堆的大小是可扩展的，因此当线程请求分配内存，但堆已满，且内存已无法再扩展时，就抛出 OutOfMemoryError 异常。</p>
+<h4 id="1-5方法区："><a href="#1-5方法区：" class="headerlink" title="1.5方法区："></a>1.5方法区：</h4><p>方法区： 所有线程共享。用于存储已被虚拟机加载的类信息、常量、静态变量、即时编译器编译后的代码等数据。方法区也有一个别名叫做Non-Heap（非堆），用于与Java堆区分</p>
+<p>根据《Java虚拟机规范》的规定，如果方法区无法满足新的内存分配需求时，将抛出OutOfMemoryError异常。</p>
+<h4 id="1-6运行时常量池："><a href="#1-6运行时常量池：" class="headerlink" title="1.6运行时常量池："></a>1.6运行时常量池：</h4><p>运行时常量池（Runtime Constant Pool）是方法区的一部分。Class文件中除了有类的版本、字段、方法、接口等描述信息外，还有一项信息是常量池表（Constant Pool Table），用于存放编译期生成的各种字面量与符号引用，这部分内容将在类加载后存放到方法区的运行时常量池中。</p>
+<p>当类被 Java 虚拟机加载后， .class 文件中的常量就存放在方法区的运行时常量池中。而且在运行期间，可以向常量池中添加新的常量。如 String 类的 intern() 方法就能在运行期间向常量池中添加字符串常量。既然运行时常量池是方法区的一部分，自然受到方法区内存的限制，当常量池无法再申请到内存时会抛出OutOfMemoryError异常</p>
+<p><img src="https://img-blog.csdn.net/20171007110030253?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvZnV6aG9uZ21pbjA1/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="img"></p>
+<p><img src="https://img-blog.csdn.net/20171007113141903?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvZnV6aG9uZ21pbjA1/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="img"></p>
+<h4 id="总结如下："><a href="#总结如下：" class="headerlink" title="总结如下："></a>总结如下：</h4><p>线程私有的区域：程序计数器、虚拟机栈、本地方法栈；<br>　　所有线程共享的区域：Java堆、方法区；<br>　　没有异常的区域：程序计数器；<br>　　StackOverflow Error异常：Java虚拟机栈、本地方法栈；<br>　　OutOfMemory Error异常：除程序计数器外的其他四个区域，Java虚拟机栈、本地方法栈、Java堆、方法区；</p>
+<p><img src="https://img-blog.csdn.net/20171007112907161?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvZnV6aG9uZ21pbjA1/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="img"></p>
+<h5 id="引申：为什么JVM要选用基于栈的架构？"><a href="#引申：为什么JVM要选用基于栈的架构？" class="headerlink" title="引申：为什么JVM要选用基于栈的架构？"></a><strong>引申：为什么JVM要选用基于栈的架构？</strong></h5><p>　　JVM选用基于栈的架构，就是所有的操作数必须先入栈，然后根据指令中的操作码选择从栈顶弹出若干个元素进行计算后再将结果压入栈中，在JVM中操作数可以存放在每一个栈帧中的一个本地变量集中，即在每个方法调用时就会给这个方法分配一个本地变量集，这个本地变量集在编译时就已经确定，所以操作数入栈可以直接是常量入栈或者从本地变量中取一个变量压入栈中。这和一般基于寄存器的操作有所不同，一个操作需要频繁地入栈和出栈，如进行一个加法运算，如果两个操作数都在本地变量中，那么一个加法操作就要有5次栈操作，分别是将两个操作数从本地变量入栈（2次），再将两个操作数出栈（2次）用于加法运算，再将结果压入栈顶（1次）。如果是基于寄存器的话，一般只需要将两个操作数存入寄存器进行加法运算后再将结果存入其中一个寄存器即可，不需要那么多的数据移动操作。那么为什么JVM还要选择基于栈来设计呢？</p>
+<p>　　因为JVM要设计成与平台无关，而平台无关性就要在没有或有很少寄存器的机器上也要同样能正确执行Java代码。例如80x86的机器上寄存器就无规律，很难针对某一款机器设计通用的基于寄存器的指令，所以基于寄存器的架构很难做到通用。在手机操作系统方面，Google的Android平台上的Dalvik VM就是基于特定芯片（ARM）设计的基于寄存器的架构，这样在特定芯片上实现基于寄存器的架构可能更多考虑性能，但是也牺牲了跨平台的移植性。</p>
+<h5 id="栈是运行时的单位，而堆是存储的单位"><a href="#栈是运行时的单位，而堆是存储的单位" class="headerlink" title="　　栈是运行时的单位，而堆是存储的单位"></a>　　<strong>栈是运行时的单位，而堆是存储的单位</strong></h5><p>　　栈解决程序的运行问题，即程序如何执行，或者说如何处理数据；堆解决的是数据存储的问题，即数据怎么放、放在哪儿。</p>
+<p>　　在Java中一个线程就会相应有一个线程栈与之对应，这点很容易理解，因为不同的线程执行逻辑有所不同，因此需要一个独立的线程栈。而堆则是所有线程共享的。栈因为是运行单位，因此里面存储的信息都是跟当前线程（或程序）相关信息的。包括局部变量、程序运行状态、方法返回值等等；而堆只负责存储对象信息。</p>
+<p>　　堆和栈两者，栈是程序运行最根本的东西，程序运行可以没有堆，但是不能没有栈。而堆是为栈进行数据存储服务，说白了堆就是一块共享的内存。不过，正是因为堆和栈的分离的思想，才使得Java的垃圾回收成为可能。</p>
+<h5 id="在Java中，Main函数就是栈的起始点，也是程序的起始点"><a href="#在Java中，Main函数就是栈的起始点，也是程序的起始点" class="headerlink" title="　　在Java中，Main函数就是栈的起始点，也是程序的起始点"></a>　　<strong>在Java中，Main函数就是栈的起始点，也是程序的起始点</strong></h5><p>　　程序要运行总是有一个起点的。同C语言一样，java中的Main就是那个起点，无论什么java程序，找到main就找到了程序执行的入口。</p>
+<p>　　程序运行永远都是在栈中进行的，因而参数传递时，只存在传递基本类型和对象引用的问题。不会直接传对象本身。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/07/20/hello-world/" rel="prev" title="Hello World">
+      <i class="fa fa-chevron-left"></i> Hello World
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+        </div>
+        
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class=""></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">周文校</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">4k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">3 分钟</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+   
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script size="300" alpha="0.6" zIndex="-1" src="//cdn.jsdelivr.net/npm/ribbon.js@1/dist/ribbon.min.js"></script>
+  <script src="/lib/anime.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"model":{"jsonPath":"/live2dw/assets/shizuku.model.json"},"display":{"position":"right","width":70,"height":120},"mobile":{"show":true},"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+</html>
