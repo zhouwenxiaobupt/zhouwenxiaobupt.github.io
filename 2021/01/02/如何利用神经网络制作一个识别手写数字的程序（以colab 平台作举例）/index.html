@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+  
+  <link rel="stylesheet" href="/lib/animate-css/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Pisces","version":"8.0.0-rc.4","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}}};
+  </script>
+
+  <meta name="description" content="1234567891011121314title: 神经网络入门date: 2020-09-07 09:25:00author:周文校img: &#x2F;source&#x2F;images&#x2F;content.jpgtop: truecover: truecoverImg: &#x2F;source&#x2F;&#x2F;images&#x2F;cover.jpgpassword: 8d">
+<meta property="og:type" content="article">
+<meta property="og:title" content="如何利用神经网络制作一个识别手写数字的程序（以colab 平台作举例）">
+<meta property="og:url" content="http://yoursite.com/2021/01/02/%E5%A6%82%E4%BD%95%E5%88%A9%E7%94%A8%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E5%88%B6%E4%BD%9C%E4%B8%80%E4%B8%AA%E8%AF%86%E5%88%AB%E6%89%8B%E5%86%99%E6%95%B0%E5%AD%97%E7%9A%84%E7%A8%8B%E5%BA%8F%EF%BC%88%E4%BB%A5colab%20%E5%B9%B3%E5%8F%B0%E4%BD%9C%E4%B8%BE%E4%BE%8B%EF%BC%89/index.html">
+<meta property="og:site_name" content="一帘秋水">
+<meta property="og:description" content="1234567891011121314title: 神经网络入门date: 2020-09-07 09:25:00author:周文校img: &#x2F;source&#x2F;images&#x2F;content.jpgtop: truecover: truecoverImg: &#x2F;source&#x2F;&#x2F;images&#x2F;cover.jpgpassword: 8d">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://zhou1234.oss-cn-beijing.aliyuncs.com/img/image-20201121143537482.png">
+<meta property="og:image" content="https://zhou1234.oss-cn-beijing.aliyuncs.com/img/image-20201121135552582.png">
+<meta property="og:image" content="https://zhou1234.oss-cn-beijing.aliyuncs.com/img/image-20201121143617947.png">
+<meta property="og:image" content="https://zhou1234.oss-cn-beijing.aliyuncs.com/img/image-20201121140104287.png">
+<meta property="og:image" content="https://zhou1234.oss-cn-beijing.aliyuncs.com/img/image-20201121140537376.png">
+<meta property="og:image" content="https://zhou1234.oss-cn-beijing.aliyuncs.com/img/image-20201121141514189.png">
+<meta property="og:image" content="https://zhou1234.oss-cn-beijing.aliyuncs.com/img/image-20201121141749110.png">
+<meta property="og:image" content="https://zhou1234.oss-cn-beijing.aliyuncs.com/img/image-20201121141939835.png">
+<meta property="og:image" content="https://zhou1234.oss-cn-beijing.aliyuncs.com/img/image-20201121142005260.png">
+<meta property="og:image" content="https://zhou1234.oss-cn-beijing.aliyuncs.com/img/image-20201121141952481.png">
+<meta property="og:image" content="https://zhou1234.oss-cn-beijing.aliyuncs.com/img/image-20201121142720135.png">
+<meta property="og:image" content="https://zhou1234.oss-cn-beijing.aliyuncs.com/img/fullsizerender(1).jpg">
+<meta property="article:published_time" content="2021-01-01T22:19:03.362Z">
+<meta property="article:modified_time" content="2021-01-01T23:40:14.941Z">
+<meta property="article:author" content="周文校">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://zhou1234.oss-cn-beijing.aliyuncs.com/img/image-20201121143537482.png">
+
+<link rel="canonical" href="http://yoursite.com/2021/01/02/%E5%A6%82%E4%BD%95%E5%88%A9%E7%94%A8%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E5%88%B6%E4%BD%9C%E4%B8%80%E4%B8%AA%E8%AF%86%E5%88%AB%E6%89%8B%E5%86%99%E6%95%B0%E5%AD%97%E7%9A%84%E7%A8%8B%E5%BA%8F%EF%BC%88%E4%BB%A5colab%20%E5%B9%B3%E5%8F%B0%E4%BD%9C%E4%B8%BE%E4%BE%8B%EF%BC%89/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>如何利用神经网络制作一个识别手写数字的程序（以colab 平台作举例） | 一帘秋水</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <main class="main">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+        <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+        <span class="toggle-line toggle-line-first"></span>
+        <span class="toggle-line toggle-line-middle"></span>
+        <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">一帘秋水</h1>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">2</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">0</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">6</span></a>
+
+  </li>
+        <li class="menu-item menu-item-schedule">
+
+    <a href="/schedule/" rel="section"><i class="fa fa-calendar fa-fw"></i>日程表</a>
+
+  </li>
+        <li class="menu-item menu-item-sitemap">
+
+    <a href="/sitemap.xml" rel="section"><i class="fa fa-sitemap fa-fw"></i>站点地图</a>
+
+  </li>
+        <li class="menu-item menu-item-commonweal">
+
+    <a href="/404/" rel="section"><i class="fa fa-heartbeat fa-fw"></i>公益 404</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <section class="post-toc-wrap sidebar-panel">
+          <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#如何利用神经网络制作一个识别手写数字的程序（以colab-平台作举例）"><span class="nav-number">1.</span> <span class="nav-text">如何利用神经网络制作一个识别手写数字的程序（以colab 平台作举例）</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#利用数据集mnist-进行手写数字的识别"><span class="nav-number">1.0.1.</span> <span class="nav-text">利用数据集mnist 进行手写数字的识别</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#一：导入相关的包："><span class="nav-number">1.0.2.</span> <span class="nav-text">一：导入相关的包：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#二：导入mnist数据集中对应数据"><span class="nav-number">1.0.3.</span> <span class="nav-text">二：导入mnist数据集中对应数据</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#三：对数据进行相应的处理，将图片数据归一化，同时向量化"><span class="nav-number">1.0.4.</span> <span class="nav-text">三：对数据进行相应的处理，将图片数据归一化，同时向量化</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#四：建立神经网络模型"><span class="nav-number">1.0.5.</span> <span class="nav-text">四：建立神经网络模型</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#五：进行模型的编译和训练"><span class="nav-number">1.0.6.</span> <span class="nav-text">五：进行模型的编译和训练</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#六：评估模型"><span class="nav-number">1.0.7.</span> <span class="nav-text">六：评估模型</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#七-：进行预测"><span class="nav-number">1.0.8.</span> <span class="nav-text">七 ：进行预测</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#八：看看在mnist-中的图片长啥样？"><span class="nav-number">1.0.9.</span> <span class="nav-text">八：看看在mnist 中的图片长啥样？</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#九：识别自己的手写体？"><span class="nav-number">1.0.10.</span> <span class="nav-text">九：识别自己的手写体？</span></a></li></ol></li></ol></li></ol></div>
+      </section>
+      <!--/noindex-->
+	  <iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=330 height=86 src="//music.163.com/outchain/player?type=2&id=520242026&auto=1&height=66"></iframe>
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">周文校</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">6</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-name">标签</span>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/zhouwenxiaobupt" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;zhouwenxiaobupt" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:zhouwenxiao@bupt.edu.cn" title="E-Mail → mailto:zhouwenxiao@bupt.edu.cn" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+  <div class="cc-license animated" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
+  </div>
+
+
+
+      </section>
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </header>
+
+      
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div id="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+      <div class="main-inner">
+        
+
+        <div class="content post posts-expand">
+          
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/01/02/%E5%A6%82%E4%BD%95%E5%88%A9%E7%94%A8%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E5%88%B6%E4%BD%9C%E4%B8%80%E4%B8%AA%E8%AF%86%E5%88%AB%E6%89%8B%E5%86%99%E6%95%B0%E5%AD%97%E7%9A%84%E7%A8%8B%E5%BA%8F%EF%BC%88%E4%BB%A5colab%20%E5%B9%B3%E5%8F%B0%E4%BD%9C%E4%B8%BE%E4%BE%8B%EF%BC%89/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="周文校">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="一帘秋水">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          如何利用神经网络制作一个识别手写数字的程序（以colab 平台作举例）
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-01-02 06:19:03 / 修改时间：07:40:14" itemprop="dateCreated datePublished" datetime="2021-01-02T06:19:03+08:00">2021-01-02</time>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>3.2k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>3 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">title: 神经网络入门</span><br><span class="line">date: 2020-09-07 09:25:00</span><br><span class="line">author:周文校</span><br><span class="line">img: &#x2F;source&#x2F;images&#x2F;content.jpg</span><br><span class="line">top: true</span><br><span class="line">cover: true</span><br><span class="line">coverImg: &#x2F;source&#x2F;&#x2F;images&#x2F;cover.jpg</span><br><span class="line">password: 8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92</span><br><span class="line">toc: false</span><br><span class="line">mathjax: false</span><br><span class="line">summary: 利用神经网络识别一个手写数字</span><br><span class="line">categories: 机器学习</span><br><span class="line">tags:</span><br><span class="line">  - Typora</span><br></pre></td></tr></table></figure>
+
+<h2 id="如何利用神经网络制作一个识别手写数字的程序（以colab-平台作举例）"><a href="#如何利用神经网络制作一个识别手写数字的程序（以colab-平台作举例）" class="headerlink" title="如何利用神经网络制作一个识别手写数字的程序（以colab 平台作举例）"></a>如何利用神经网络制作一个识别手写数字的程序（以colab 平台作举例）</h2><p>前言： 本程序平台为 colab  即google的深度学习在线平台，为防止初学者被繁杂的tensflow 环境配置磨灭了热情， 我们不妨使用在线的深度学习平台进行学习和训练</p>
+<p><a href="https://colab.research.google.com/notebooks/intro.ipynb" target="_blank" rel="noopener">点击这里即可</a>  不过可能要科学上网  ，不能的同学也可以利用国内的平台，在结果上并无不同之处 </p>
+<p><img src="https://zhou1234.oss-cn-beijing.aliyuncs.com/img/image-20201121143537482.png" alt="image-20201121143617947"></p>
+<h4 id="利用数据集mnist-进行手写数字的识别"><a href="#利用数据集mnist-进行手写数字的识别" class="headerlink" title="利用数据集mnist 进行手写数字的识别"></a>利用数据集mnist 进行手写数字的识别</h4><p>废话不多说，让我们开始吧     ( 为了让大家更好的理解，每一步我都标注了比较详细的注释哈)</p>
+<h4 id="一：导入相关的包："><a href="#一：导入相关的包：" class="headerlink" title="一：导入相关的包："></a>一：导入相关的包：</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"> !pip install tensorflow keras numpy mnist matplotlib</span><br><span class="line"> <span class="comment"># 导入数据包</span></span><br><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">import</span> mnist  <span class="comment"># 获得数据集</span></span><br><span class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt  <span class="comment"># Graph</span></span><br><span class="line"><span class="keyword">from</span> keras.models <span class="keyword">import</span> Sequential  <span class="comment"># ANN 网络结构</span></span><br><span class="line"><span class="keyword">from</span> keras.layers <span class="keyword">import</span> Dense <span class="comment"># the layer in  the  ANN</span></span><br><span class="line"><span class="keyword">import</span> keras</span><br><span class="line"><span class="keyword">import</span> keras.utils</span><br><span class="line"><span class="keyword">from</span> keras <span class="keyword">import</span> utils <span class="keyword">as</span> np_utils</span><br></pre></td></tr></table></figure>
+
+<h4 id="二：导入mnist数据集中对应数据"><a href="#二：导入mnist数据集中对应数据" class="headerlink" title="二：导入mnist数据集中对应数据"></a>二：导入mnist数据集中对应数据</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 导入数据</span></span><br><span class="line">train_images = mnist.train_images()  <span class="comment"># 训练数据集图片</span></span><br><span class="line">train_labels = mnist.train_labels()   <span class="comment"># 训练标签 </span></span><br><span class="line">test_images = mnist.test_images()  <span class="comment"># 测试图片</span></span><br><span class="line">test_labels = mnist.test_labels()  <span class="comment"># 测试标签</span></span><br></pre></td></tr></table></figure>
+
+<p>注：因为mnist 已经是一个分类好的 数据集了，我们只需要调用期中的训练数据和测试数据即可</p>
+<h4 id="三：对数据进行相应的处理，将图片数据归一化，同时向量化"><a href="#三：对数据进行相应的处理，将图片数据归一化，同时向量化" class="headerlink" title="三：对数据进行相应的处理，将图片数据归一化，同时向量化"></a>三：对数据进行相应的处理，将图片数据归一化，同时向量化</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 规范化图片   规范化像素值[0,255]</span></span><br><span class="line"><span class="comment"># 为了使神经网络更好的训练，我们把值设置为[-0.5 , 0.5]</span></span><br><span class="line">train_images = (train_images/<span class="number">255</span>) - <span class="number">0.5</span></span><br><span class="line">test_images = (test_images/<span class="number">255</span>) - <span class="number">0.5</span></span><br><span class="line"><span class="comment"># 将 28 * 28 像素图片展成 28 * 28 = 784 维向量</span></span><br><span class="line">train_images = train_images.reshape((<span class="number">-1</span>,<span class="number">784</span>))</span><br><span class="line">test_images = test_images.reshape((<span class="number">-1</span>,<span class="number">784</span>))</span><br><span class="line"><span class="comment">#打印出来</span></span><br><span class="line">print(train_images.shape) <span class="comment"># 6000个训练数据</span></span><br><span class="line">print(test_images.shape) <span class="comment"># 1000个测试数据</span></span><br></pre></td></tr></table></figure>
+
+<p>结果是：</p>
+<p><img src="https://zhou1234.oss-cn-beijing.aliyuncs.com/img/image-20201121135552582.png" alt="image-20201121143537482"></p>
+<h4 id="四：建立神经网络模型"><a href="#四：建立神经网络模型" class="headerlink" title="四：建立神经网络模型"></a>四：建立神经网络模型</h4><p>在这里我们为了方面初学者，我们使用 Keras Sequential 顺序模型</p>
+<p>​            顺序模型是多个网络层的线性堆叠。</p>
+<p>你可以通过将网络层实例的列表传递给 <code>Sequential</code> 的构造器，来创建一个 <code>Sequential</code> 模型</p>
+<p><a href="https://keras.io/zh/getting-started/sequential-model-guide/" target="_blank" rel="noopener">官方中文doc指路</a></p>
+<p><img src="https://zhou1234.oss-cn-beijing.aliyuncs.com/img/image-20201121143617947.png" alt="image-20201121141749110"></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 建立模型</span></span><br><span class="line"><span class="comment"># 3层 ，其中两层 64 个神经元 以及激励函数  一层10个神经元 以及归一化指数函数（softmax fuction）</span></span><br><span class="line">model = Sequential()</span><br><span class="line">model.add( Dense(<span class="number">64</span>, activation=<span class="string">"relu"</span>, input_dim = <span class="number">784</span>))</span><br><span class="line">model.add( Dense(<span class="number">64</span>, activation=<span class="string">"relu"</span>))</span><br><span class="line">model.add(Dense(<span class="number">10</span>, activation=<span class="string">"softmax"</span>))</span><br><span class="line">print(model.summary())</span><br></pre></td></tr></table></figure>
+
+<p>我们打印出来模型的简要介绍：</p>
+<p><img src="https://zhou1234.oss-cn-beijing.aliyuncs.com/img/image-20201121140104287.png" alt="image-20201121135552582"></p>
+<h4 id="五：进行模型的编译和训练"><a href="#五：进行模型的编译和训练" class="headerlink" title="五：进行模型的编译和训练"></a>五：进行模型的编译和训练</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 编译模型 </span></span><br><span class="line"><span class="comment"># 损失函数衡量模型在训练中的表现 然后进行优化</span></span><br><span class="line">model.compile(</span><br><span class="line">    optimizer = <span class="string">'adam'</span>,</span><br><span class="line">    loss = <span class="string">"categorical_crossentropy"</span>,</span><br><span class="line">    metrics = [<span class="string">"accuracy"</span>]</span><br><span class="line">)</span><br><span class="line"><span class="comment"># 训练模型</span></span><br><span class="line"><span class="keyword">from</span> keras.utils.np_utils <span class="keyword">import</span> to_categorical</span><br><span class="line">history=model.fit(</span><br><span class="line">    train_images,</span><br><span class="line">    to_categorical(train_labels),</span><br><span class="line">    epochs = <span class="number">5</span>,  <span class="comment">#要训​​练的整个数据集的迭代次数</span></span><br><span class="line">    batch_size = <span class="number">32</span>  <span class="comment">#每个梯度更新的样本数以进行训练</span></span><br><span class="line"></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line">print(history.history.keys())</span><br><span class="line"><span class="comment"># print(plt.plot(history.history['loss']))</span></span><br><span class="line">print(plt.plot(history.history[<span class="string">'accuracy'</span>]))</span><br></pre></td></tr></table></figure>
+
+
+
+<p>如果我上述注释大家有不明白之处，指路 <a href="https://keras.io/zh/losses/" target="_blank" rel="noopener">我是官方文档，快来点我鸭</a></p>
+<p>the result:</p>
+<p><img src="https://zhou1234.oss-cn-beijing.aliyuncs.com/img/image-20201121140537376.png" alt="image-20201121140104287"></p>
+<p>看，我们的训练精读达到了百分之九十六左右，当然首次训练比较失败23333，但是随着训练次数的增加精度在上升了呢，你也可以增加迭代次数来得到更高的精度呀！</p>
+<p>训练完成了以后，让我们小小评估一下这个模型吧</p>
+<h4 id="六：评估模型"><a href="#六：评估模型" class="headerlink" title="六：评估模型"></a>六：评估模型</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 评估模型</span></span><br><span class="line">model.evaluate(</span><br><span class="line">    test_images,</span><br><span class="line">    to_categorical(test_labels)</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+
+<p>the result :</p>
+<p><img src="https://zhou1234.oss-cn-beijing.aliyuncs.com/img/image-20201121141514189.png" alt="image-20201121140537376"></p>
+<h4 id="七-：进行预测"><a href="#七-：进行预测" class="headerlink" title="七 ：进行预测"></a>七 ：进行预测</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 保存模型</span></span><br><span class="line"><span class="comment"># 预测前五个图片</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">predictions = model.predict(test_images[:<span class="number">5</span>])</span><br><span class="line"><span class="comment"># 输出模型预测 同时和标准值进行比较</span></span><br><span class="line">print(np.argmax(predictions, axis = <span class="number">1</span>))</span><br><span class="line">print(test_labels[:<span class="number">5</span>])</span><br></pre></td></tr></table></figure>
+
+
+
+<p><img src="https://zhou1234.oss-cn-beijing.aliyuncs.com/img/image-20201121141749110.png" alt="image-20201121141514189"></p>
+<p>结果完全正确！ Amazing!</p>
+<h4 id="八：看看在mnist-中的图片长啥样？"><a href="#八：看看在mnist-中的图片长啥样？" class="headerlink" title="八：看看在mnist 中的图片长啥样？"></a>八：看看在mnist 中的图片长啥样？</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">0</span>,<span class="number">5</span>):</span><br><span class="line">  first_image = test_images[i]</span><br><span class="line">  first_image = np.array(first_image ,dtype= <span class="string">"float"</span>)</span><br><span class="line">  pixels = first_image.reshape((<span class="number">28</span> ,<span class="number">28</span>))</span><br><span class="line">  plt.imshow(pixels , cmap=<span class="string">"gray"</span>)</span><br><span class="line">  plt.show()</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://zhou1234.oss-cn-beijing.aliyuncs.com/img/image-20201121141939835.png" alt="image-20201121141939835"></p>
+<p><img src="https://zhou1234.oss-cn-beijing.aliyuncs.com/img/image-20201121142005260.png" alt="image-20201121141952481"></p>
+<p><img src="https://zhou1234.oss-cn-beijing.aliyuncs.com/img/image-20201121141952481.png" alt="image-20201121142005260"></p>
+<p>看来效果还不错。</p>
+<h4 id="九：识别自己的手写体？"><a href="#九：识别自己的手写体？" class="headerlink" title="九：识别自己的手写体？"></a>九：识别自己的手写体？</h4><p>首先需要建立连接：</p>
+<p>因为catlab 的文件运行在云端中，我需要它和google drives 进行绑定 ，在本地运行的同学则不用这个步骤</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> os</span><br><span class="line"><span class="keyword">from</span> google.colab <span class="keyword">import</span> drive</span><br><span class="line">drive.mount(<span class="string">'/content/drive'</span>)</span><br><span class="line"></span><br><span class="line">path = <span class="string">"/content/drive/My Drive/data"</span></span><br><span class="line"></span><br><span class="line">os.chdir(path)</span><br><span class="line">os.listdir(path)</span><br></pre></td></tr></table></figure>
+
+
+
+<p>之后，进行模型预测</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> PIL <span class="keyword">import</span> Image</span><br><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">import</span> os</span><br><span class="line"></span><br><span class="line">img = Image.open(<span class="string">"test.jpg"</span>).convert(<span class="string">"1"</span>)</span><br><span class="line">img = np.resize(img, (<span class="number">28</span>,<span class="number">28</span>,<span class="number">1</span>))</span><br><span class="line">im2arr = np.array(img)</span><br><span class="line">im2arr = im2arr.reshape(<span class="number">1</span>,<span class="number">784</span>)</span><br><span class="line">y_pred = model.predict(im2arr)</span><br><span class="line">print(np.argmax(y_pred, axis = <span class="number">1</span>))</span><br></pre></td></tr></table></figure>
+
+
+
+<p>结果：<img src="https://zhou1234.oss-cn-beijing.aliyuncs.com/img/image-20201121142720135.png" alt="image-20201121142720135"></p>
+<p>结果应该是正确的，</p>
+<p>这是我写的5，23333</p>
+<p><img src="https://zhou1234.oss-cn-beijing.aliyuncs.com/img/fullsizerender(1).jpg" alt="fullsizerender(1)"></p>
+<p><a href="https://github.com/zhouwenxiaobupt/-/blob/master/handwrittenDigitPrediction.ipynb" target="_blank" rel="noopener">附上源代码链接</a></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/07/29/mysql/" rel="prev" title="mysql">
+      <i class="fa fa-chevron-left"></i> mysql
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/01/02/about/" rel="next" title="about">
+      about <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+        </div>
+        
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class=""></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">周文校</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">45k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">41 分钟</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+   
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script size="300" alpha="0.6" zIndex="-1" src="//cdn.jsdelivr.net/npm/ribbon.js@1/dist/ribbon.min.js"></script>
+  <script src="/lib/anime.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"model":{"jsonPath":"/live2dw/assets/shizuku.model.json"},"display":{"position":"right","width":70,"height":120},"mobile":{"show":true},"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+</html>

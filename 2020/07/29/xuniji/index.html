@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+  
+  <link rel="stylesheet" href="/lib/animate-css/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Pisces","version":"8.0.0-rc.4","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}}};
+  </script>
+
+  <meta name="description" content="深入理解java 虚拟机第二弹：对象2.1对象的创建众所周知，Java 是一门完全对象的编程语言，java 在运行过程中有无数的对象被创造出来，你有没有想过在你巧下一个new关键字的时候，java  虚拟机中发生了哪些操作呢？ 当Java虚拟机遇到一条字节码new指令时，首先将去检查这个指令的参数是否能在常量池中定位到一个类的符号引用，并且检查这个符号引用代表的类是否已被加载、解析和初始化过。如果">
+<meta property="og:type" content="article">
+<meta property="og:title" content="深入理解Java虚拟机第二弹：对象">
+<meta property="og:url" content="http://yoursite.com/2020/07/29/xuniji/index.html">
+<meta property="og:site_name" content="一帘秋水">
+<meta property="og:description" content="深入理解java 虚拟机第二弹：对象2.1对象的创建众所周知，Java 是一门完全对象的编程语言，java 在运行过程中有无数的对象被创造出来，你有没有想过在你巧下一个new关键字的时候，java  虚拟机中发生了哪些操作呢？ 当Java虚拟机遇到一条字节码new指令时，首先将去检查这个指令的参数是否能在常量池中定位到一个类的符号引用，并且检查这个符号引用代表的类是否已被加载、解析和初始化过。如果">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://upload-images.jianshu.io/upload_images/65058-b7ce1dbc500d45e6.png?imageMogr2/auto-orient/strip%7CimageView2/2/format/webp">
+<meta property="og:image" content="https://zhou1234.oss-cn-beijing.aliyuncs.com/img/image-20200729135718683.png">
+<meta property="og:image" content="https://zhou1234.oss-cn-beijing.aliyuncs.com/img/image-20200729141307572.png">
+<meta property="og:image" content="https://zhou1234.oss-cn-beijing.aliyuncs.com/img/image-20200729141152309.png">
+<meta property="article:published_time" content="2020-07-29T06:18:01.000Z">
+<meta property="article:modified_time" content="2020-07-29T06:26:28.984Z">
+<meta property="article:author" content="周文校">
+<meta property="article:tag" content="java虚拟机">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://upload-images.jianshu.io/upload_images/65058-b7ce1dbc500d45e6.png?imageMogr2/auto-orient/strip%7CimageView2/2/format/webp">
+
+<link rel="canonical" href="http://yoursite.com/2020/07/29/xuniji/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>深入理解Java虚拟机第二弹：对象 | 一帘秋水</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <main class="main">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+        <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+        <span class="toggle-line toggle-line-first"></span>
+        <span class="toggle-line toggle-line-middle"></span>
+        <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">一帘秋水</h1>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">2</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">0</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">6</span></a>
+
+  </li>
+        <li class="menu-item menu-item-schedule">
+
+    <a href="/schedule/" rel="section"><i class="fa fa-calendar fa-fw"></i>日程表</a>
+
+  </li>
+        <li class="menu-item menu-item-sitemap">
+
+    <a href="/sitemap.xml" rel="section"><i class="fa fa-sitemap fa-fw"></i>站点地图</a>
+
+  </li>
+        <li class="menu-item menu-item-commonweal">
+
+    <a href="/404/" rel="section"><i class="fa fa-heartbeat fa-fw"></i>公益 404</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <section class="post-toc-wrap sidebar-panel">
+          <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#深入理解java-虚拟机第二弹：对象"><span class="nav-number">1.</span> <span class="nav-text">深入理解java 虚拟机第二弹：对象</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#2-1对象的创建"><span class="nav-number">1.1.</span> <span class="nav-text">2.1对象的创建</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2内存布局"><span class="nav-number">1.1.1.</span> <span class="nav-text">2.2内存布局</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-3-对象的访问定位："><span class="nav-number">1.1.2.</span> <span class="nav-text">2.3 对象的访问定位：</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#句柄访问方式："><span class="nav-number">1.1.2.1.</span> <span class="nav-text">句柄访问方式：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#直接访问方式："><span class="nav-number">1.1.2.2.</span> <span class="nav-text">直接访问方式：</span></a></li></ol></li></ol></li></ol></li></ol></div>
+      </section>
+      <!--/noindex-->
+	  <iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=330 height=86 src="//music.163.com/outchain/player?type=2&id=520242026&auto=1&height=66"></iframe>
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">周文校</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">6</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-name">标签</span>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/zhouwenxiaobupt" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;zhouwenxiaobupt" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:zhouwenxiao@bupt.edu.cn" title="E-Mail → mailto:zhouwenxiao@bupt.edu.cn" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+  <div class="cc-license animated" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
+  </div>
+
+
+
+      </section>
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </header>
+
+      
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div id="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+      <div class="main-inner">
+        
+
+        <div class="content post posts-expand">
+          
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/07/29/xuniji/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="周文校">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="一帘秋水">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          深入理解Java虚拟机第二弹：对象
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2020-07-29 14:18:01 / 修改时间：14:26:28" itemprop="dateCreated datePublished" datetime="2020-07-29T14:18:01+08:00">2020-07-29</time>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>2.4k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>2 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="深入理解java-虚拟机第二弹：对象"><a href="#深入理解java-虚拟机第二弹：对象" class="headerlink" title="深入理解java 虚拟机第二弹：对象"></a>深入理解java 虚拟机第二弹：对象</h1><h2 id="2-1对象的创建"><a href="#2-1对象的创建" class="headerlink" title="2.1对象的创建"></a>2.1对象的创建</h2><p>众所周知，Java 是一门完全对象的编程语言，java 在运行过程中有无数的对象被创造出来，你有没有想过在你巧下一个new关键字的时候，java  虚拟机中发生了哪些操作呢？</p>
+<p>当Java虚拟机遇到一条字节码new指令时，首先将去检查这个指令的参数是否能在常量池中定位到一个类的符号引用，并且检查这个符号引用代表的类是否已被加载、解析和初始化过。如果没有，那必须先执行相应的类加载过程，在类加载检查通过后，接下来虚拟机将为新生对象分配内存。对象所需内存的大小在类加载完成后便可完全确定。为对象分配空间的任务实际上便等同于把一块确定大小的内存块从Java堆中划分出来</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/65058-b7ce1dbc500d45e6.png?imageMogr2/auto-orient/strip%7CimageView2/2/format/webp" alt="img"></p>
+<p>分配堆中内存的方式有两种：</p>
+<a id="more"></a>
+
+<ol>
+<li><p><strong>指针碰撞</strong><br>如果 Java <strong>堆中内存绝对规整</strong>（说明采用的是“<strong>复制算法</strong>”或“<strong>标记整理法</strong>”），空闲内存和已使用内存中间放着一个指针作为分界点指示器，那么分配内存时只需要把指针向空闲内存挪动一段与对象大小一样的距离，这种分配方式称为“<strong>指针碰撞</strong>”。</p>
+</li>
+<li><p><strong>空闲列表</strong><br>如果 Java <strong>堆中内存并不规整</strong>，已使用的内存和空闲内存交错（说明采用的是<strong>标记-清除法</strong>，有碎片），此时没法简单进行指针碰撞， VM 必须维护一个列表，记录其中哪些内存块空闲可用。分配之时从空闲列表中找到一块足够大的内存空间划分给对象实例。这种方式称为“<strong>空闲列表</strong>”。</p>
+<p>注意点：这里是需要考虑到并发的，即使是移动指针这样子的小动作都是有可能产生并发。解决方式有两种：</p>
+<p>（1）、堆是线程共享的，每一个线程都可以来申请堆内存空间，对内存空间的分配采用同步处理的方式；</p>
+<p>（2）、为每一个线程都分配一小块内存，称为本地线程分配缓冲（TLAB），各个线程需要分配内存的时候就在各自的本地线程分配缓冲（TLAB）上面分配，只有当本地线程分配缓冲（TLAB）的内存空间不足进行重新分配的时候才进行同步锁定。</p>
+</li>
+</ol>
+<p>之后便是初始化了：</p>
+<p>分配完内存后，为对象中的成员变量赋上初始值，设置对象头信息，调用对象的构造函数方法进行初始化。</p>
+<p>至此，整个对象的创建过程就完成了。</p>
+<h3 id="2-2内存布局"><a href="#2-2内存布局" class="headerlink" title="2.2内存布局"></a>2.2内存布局</h3><p>在HotSpot虚拟机里，对象在堆内存中的存储布局可以划分为三个部分：对象头（Header）、实例数据（Instance Data）和对齐填充（Padding）</p>
+<p><img src="https://zhou1234.oss-cn-beijing.aliyuncs.com/img/image-20200729135718683.png" alt="image-20200729135718683"></p>
+<p>1、对象头</p>
+<p>对象头的数据包括两个部分：</p>
+<p>（1）、对象运行时的数据：如哈希码、GC分代年龄、锁状态标志、线程持有的锁、偏向线程ID、偏向时间戳等。这部分数据的长度在32位和64位虚拟机中的大小分别为32bit和64bit（这部分数据是与对象自身定义的数据无关的额外存储，所以这部分数据被设计成一个无固定的数据结构，即不固定安排大小，因此可以存储更多的数据）。</p>
+<p>（2）、对象的类型指针，指向该对象的类元数据。</p>
+<p>虚拟机通过类型指针来确定那个对象是类的实例，但是并不是所有的虚拟机实现都是需要在对象数据上保留类型指针的，因为查找对象的类元数据信息不一定要经过对象本身。这个涉及到访问对象的方式（句柄方位方式和直接指针方式，直接指针方式才需要把对象的类型数据指针放在对象头当中）</p>
+<p>（3）、如果对象是一个数组，那么在对象头当中还需要有一块用来记录数组的长度，因为虚拟机可以通过普通的java对象的元数据知道java对象的大小，但是无法从数组的元数据当中确定数组的大小。</p>
+<p>2、实例数据</p>
+<p>对象的实例数据是对象真正存储的有效信息，也是我们在代码中真正定义的字段内容。对象的实例数据不论是从父类那边继承下来的还是自己创建的，都需要记录。所以我们在编写代码的时候，使用继承让我们少些了很多代码，但是事实上我们编写的子类的对象，字段和数据虽然是可以继承自父类的，但是却是独立的。</p>
+<p>3、对齐填充</p>
+<p>这部分的数据是没有意义的，并且也不是必需的，作用是占位。</p>
+<p>原因：如果JVM的内存自动管理系统是要求对象的其实地址必需是8字节的整数倍，也就是说对象的大小必需是8字节的整数倍，对象头部分正好是8字节的倍数，当对象实例数据没有对齐的时候，需要对齐填充来补齐。因此这部分的数据是没有意义的，只是用来填充。</p>
+<p>注释：需要对齐填充的原因有蛮多的，包括：CPU的读取效率，因为地址总线的原因，在寻址过程当中不对齐的情况读取一个8比特的数据需要对读取两次，而写的时候效率就更低了，需要写两次，然后组合起来的数据才是我们要写入的数据，这样子写入的效率是很低的。我们定义数据库字段的长度的时候最好也是定义成8的倍数。</p>
+<h3 id="2-3-对象的访问定位："><a href="#2-3-对象的访问定位：" class="headerlink" title="2.3 对象的访问定位："></a>2.3 对象的访问定位：</h3><p>所有对象的存储空间都是在堆中分配的，但是这个对象的引用却是在堆栈中分配的。也就是说在建立一个对象时两个地方都分配内存，在堆中分配的内存实际建立这个对象，而在堆栈中分配的内存只是一个指向这个堆对象的指针（引用）而已。 那么根据引用存放的地址类型的不同，对象有不同的访问方式。</p>
+<h4 id="句柄访问方式："><a href="#句柄访问方式：" class="headerlink" title="句柄访问方式："></a>句柄访问方式：</h4><p>使用句柄访问的话，Java堆中将可能会划分出一块内存来作为句柄池，reference中存储的就是对象的句柄地址，而句柄中包含了对象实例数据与类型数据各自具体的地址信息，</p>
+<p><img src="https://zhou1234.oss-cn-beijing.aliyuncs.com/img/image-20200729141307572.png" alt="image-20200729141152309"></p>
+<p>好处：</p>
+<p>使用句柄来访问的最大好处就是reference中存储的是稳定句柄地址，在对象被移动（垃圾收集时移动对象是非常普遍的行为）时只会改变句柄中的实例数据指针，而reference本身不需要被修改。</p>
+<h4 id="直接访问方式："><a href="#直接访问方式：" class="headerlink" title="直接访问方式："></a>直接访问方式：</h4><p>引用类型的变量直接存放对象的地址，从而不需要句柄池，通过引用能够直接访问对象。但对象所在的内存空间需要额外的策略存储对象所属的类信息的地址。</p>
+<p><img src="https://zhou1234.oss-cn-beijing.aliyuncs.com/img/image-20200729141152309.png" alt="image-20200729141307572"></p>
+<p>好处：</p>
+<p>使用直接指针来访问最大的好处就是速度更快，它节省了一次指针定位的时间开销，由于对象访问在Java中非常频繁，因此这类开销积少成多也是一项极为可观的执行成本</p>
+<p>需要说明的是，HotSpot 采用第二种方式，即直接指针方式来访问对象，只需要一次寻址操作，所以在性能上比句柄访问方式快一倍。但像上面所说，它需要<strong>额外的策略</strong>来存储对象在方法区中类信息的地址。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/java%E8%99%9A%E6%8B%9F%E6%9C%BA/" rel="tag"># java虚拟机</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/07/28/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3java%E8%99%9A%E6%8B%9F%E6%9C%BA%E7%AC%AC%E4%B8%80%E5%BC%B9%EF%BC%9AJava%E7%9A%84%E5%86%85%E5%AD%98%E5%8C%BA%E5%9F%9F/" rel="prev" title="深入理解java虚拟机第一弹：Java的内存区域">
+      <i class="fa fa-chevron-left"></i> 深入理解java虚拟机第一弹：Java的内存区域
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/07/29/mysql/" rel="next" title="mysql">
+      mysql <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+        </div>
+        
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class=""></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">周文校</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">45k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">41 分钟</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+   
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script size="300" alpha="0.6" zIndex="-1" src="//cdn.jsdelivr.net/npm/ribbon.js@1/dist/ribbon.min.js"></script>
+  <script src="/lib/anime.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"model":{"jsonPath":"/live2dw/assets/shizuku.model.json"},"display":{"position":"right","width":70,"height":120},"mobile":{"show":true},"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+</html>
