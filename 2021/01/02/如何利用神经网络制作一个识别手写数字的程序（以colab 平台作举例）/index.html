@@ -42,7 +42,7 @@
 <meta property="og:image" content="https://zhou1234.oss-cn-beijing.aliyuncs.com/img/image-20201121142720135.png">
 <meta property="og:image" content="https://zhou1234.oss-cn-beijing.aliyuncs.com/img/fullsizerender(1).jpg">
 <meta property="article:published_time" content="2021-01-01T22:19:03.362Z">
-<meta property="article:modified_time" content="2021-01-01T23:40:14.941Z">
+<meta property="article:modified_time" content="2021-05-07T13:15:26.718Z">
 <meta property="article:author" content="周文校">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://zhou1234.oss-cn-beijing.aliyuncs.com/img/image-20201121143537482.png">
@@ -161,7 +161,7 @@
   </li>
         <li class="menu-item menu-item-archives">
 
-    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">6</span></a>
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">7</span></a>
 
   </li>
         <li class="menu-item menu-item-schedule">
@@ -223,13 +223,15 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">6</span>
+          <span class="site-state-item-count">7</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
         <span class="site-state-item-count">2</span>
-        <span class="site-state-item-name">标签</span>
+        <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
 </div>
@@ -298,10 +300,16 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
-              
 
-              <time title="创建时间：2021-01-02 06:19:03 / 修改时间：07:40:14" itemprop="dateCreated datePublished" datetime="2021-01-02T06:19:03+08:00">2021-01-02</time>
+              <time title="创建时间：2021-01-02 06:19:03" itemprop="dateCreated datePublished" datetime="2021-01-02T06:19:03+08:00">2021-01-02</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-05-07 21:15:26" itemprop="dateModified" datetime="2021-05-07T21:15:26+08:00">2021-05-07</time>
+              </span>
 
           <br>
             <span class="post-meta-item" title="本文字数">
@@ -333,6 +341,8 @@
 <h2 id="如何利用神经网络制作一个识别手写数字的程序（以colab-平台作举例）"><a href="#如何利用神经网络制作一个识别手写数字的程序（以colab-平台作举例）" class="headerlink" title="如何利用神经网络制作一个识别手写数字的程序（以colab 平台作举例）"></a>如何利用神经网络制作一个识别手写数字的程序（以colab 平台作举例）</h2><p>前言： 本程序平台为 colab  即google的深度学习在线平台，为防止初学者被繁杂的tensflow 环境配置磨灭了热情， 我们不妨使用在线的深度学习平台进行学习和训练</p>
 <p><a href="https://colab.research.google.com/notebooks/intro.ipynb" target="_blank" rel="noopener">点击这里即可</a>  不过可能要科学上网  ，不能的同学也可以利用国内的平台，在结果上并无不同之处 </p>
 <p><img src="https://zhou1234.oss-cn-beijing.aliyuncs.com/img/image-20201121143537482.png" alt="image-20201121143617947"></p>
+<a id="more"></a>
+
 <h4 id="利用数据集mnist-进行手写数字的识别"><a href="#利用数据集mnist-进行手写数字的识别" class="headerlink" title="利用数据集mnist 进行手写数字的识别"></a>利用数据集mnist 进行手写数字的识别</h4><p>废话不多说，让我们开始吧     ( 为了让大家更好的理解，每一步我都标注了比较详细的注释哈)</p>
 <h4 id="一：导入相关的包："><a href="#一：导入相关的包：" class="headerlink" title="一：导入相关的包："></a>一：导入相关的包：</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"> !pip install tensorflow keras numpy mnist matplotlib</span><br><span class="line"> <span class="comment"># 导入数据包</span></span><br><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">import</span> mnist  <span class="comment"># 获得数据集</span></span><br><span class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt  <span class="comment"># Graph</span></span><br><span class="line"><span class="keyword">from</span> keras.models <span class="keyword">import</span> Sequential  <span class="comment"># ANN 网络结构</span></span><br><span class="line"><span class="keyword">from</span> keras.layers <span class="keyword">import</span> Dense <span class="comment"># the layer in  the  ANN</span></span><br><span class="line"><span class="keyword">import</span> keras</span><br><span class="line"><span class="keyword">import</span> keras.utils</span><br><span class="line"><span class="keyword">from</span> keras <span class="keyword">import</span> utils <span class="keyword">as</span> np_utils</span><br></pre></td></tr></table></figure>
 
@@ -408,12 +418,12 @@
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/2020/07/29/mysql/" rel="prev" title="mysql">
-      <i class="fa fa-chevron-left"></i> mysql
+    <a href="/2020/09/07/zatan/" rel="prev" title="杂谈">
+      <i class="fa fa-chevron-left"></i> 杂谈
     </a></div>
       <div class="post-nav-item">
-    <a href="/2021/01/02/about/" rel="next" title="about">
-      about <i class="fa fa-chevron-right"></i>
+    <a href="/2021/05/07/%E7%AE%97%E6%B3%95%E5%AD%A6%E4%B9%A0%EF%BC%88%E6%95%B0%E7%BB%84%E9%83%A8%E5%88%86%EF%BC%8905-07/" rel="next" title="深入理解java虚拟机第一弹：Java的内存区域">
+      深入理解java虚拟机第一弹：Java的内存区域 <i class="fa fa-chevron-right"></i>
     </a></div>
     </div>
       </footer>
@@ -471,13 +481,13 @@
       <i class="fa fa-chart-area"></i>
     </span>
       <span class="post-meta-item-text">站点总字数：</span>
-    <span title="站点总字数">45k</span>
+    <span title="站点总字数">65k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
-    <span title="站点阅读时长">41 分钟</span>
+    <span title="站点阅读时长">59 分钟</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
   </div>
