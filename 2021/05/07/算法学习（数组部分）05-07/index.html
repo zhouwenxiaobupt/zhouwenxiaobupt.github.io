@@ -24,14 +24,14 @@
 
   <meta name="description" content="今天主要完成区间问题和K-sum 问题 ![05-07%208be1e0966c444764ad435c6e5202dfbe&#x2F;Untitled.png](https:&#x2F;&#x2F;zhou1234.oss-cn-beijing.aliyuncs.com&#x2F;img&#x2F;Untitled 1.png) k-sum 问题：给定一个已按照 **升序排列  的整数数组 numbers ，请你从数组中找出两个数满足相加之和等">
 <meta property="og:type" content="article">
-<meta property="og:title" content="深入理解java虚拟机第一弹：Java的内存区域">
+<meta property="og:title" content="算法LeetCode 学习第一弹">
 <meta property="og:url" content="http://yoursite.com/2021/05/07/%E7%AE%97%E6%B3%95%E5%AD%A6%E4%B9%A0%EF%BC%88%E6%95%B0%E7%BB%84%E9%83%A8%E5%88%86%EF%BC%8905-07/index.html">
 <meta property="og:site_name" content="一帘秋水">
 <meta property="og:description" content="今天主要完成区间问题和K-sum 问题 ![05-07%208be1e0966c444764ad435c6e5202dfbe&#x2F;Untitled.png](https:&#x2F;&#x2F;zhou1234.oss-cn-beijing.aliyuncs.com&#x2F;img&#x2F;Untitled 1.png) k-sum 问题：给定一个已按照 **升序排列  的整数数组 numbers ，请你从数组中找出两个数满足相加之和等">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://zhou1234.oss-cn-beijing.aliyuncs.com/img/Untitled.png">
 <meta property="article:published_time" content="2021-05-07T15:14:53.000Z">
-<meta property="article:modified_time" content="2021-05-07T13:15:24.613Z">
+<meta property="article:modified_time" content="2021-05-07T13:36:29.584Z">
 <meta property="article:author" content="周文校">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://zhou1234.oss-cn-beijing.aliyuncs.com/img/Untitled.png">
@@ -49,7 +49,7 @@
   };
 </script>
 
-  <title>深入理解java虚拟机第一弹：Java的内存区域 | 一帘秋水</title>
+  <title>算法LeetCode 学习第一弹 | 一帘秋水</title>
   
 
 
@@ -200,7 +200,7 @@
           <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#k-sum-问题："><span class="nav-number">1.</span> <span class="nav-text">k-sum 问题：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#发散一下，如何进行减少重复比较呢？"><span class="nav-number">2.</span> <span class="nav-text">发散一下，如何进行减少重复比较呢？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#74-搜索二维矩阵"><span class="nav-number">3.</span> <span class="nav-text">74: 搜索二维矩阵</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#二分解法-普适）"><span class="nav-number">4.</span> <span class="nav-text">二分解法  (普适）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#特殊方法：采用的是减少重复搜索的特殊方法"><span class="nav-number">5.</span> <span class="nav-text">特殊方法：采用的是减少重复搜索的特殊方法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#11-盛最多水的容器"><span class="nav-number">6.</span> <span class="nav-text">11:盛最多水的容器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#拼多多面试题"><span class="nav-number">7.</span> <span class="nav-text">拼多多面试题:</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#环形数组的最大值部分："><span class="nav-number">8.</span> <span class="nav-text">环形数组的最大值部分：</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#树部分"><span class="nav-number"></span> <span class="nav-text">树部分</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#example-讲述如何实现二叉树结构："><span class="nav-number">1.</span> <span class="nav-text">example 讲述如何实现二叉树结构：</span></a></li></ol></div>
       </section>
       <!--/noindex-->
-	  <iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=330 height=86 src="//music.163.com/outchain/player?type=2&id=520242026&auto=1&height=66"></iframe>
+	  
 
       <section class="site-overview-wrap sidebar-panel">
         <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -280,7 +280,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          深入理解java虚拟机第一弹：Java的内存区域
+          算法LeetCode 学习第一弹
         </h1>
 
         <div class="post-meta">
@@ -291,7 +291,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2021-05-07 23:14:53 / 修改时间：21:15:24" itemprop="dateCreated datePublished" datetime="2021-05-07T23:14:53+08:00">2021-05-07</time>
+              <time title="创建时间：2021-05-07 23:14:53 / 修改时间：21:36:29" itemprop="dateCreated datePublished" datetime="2021-05-07T23:14:53+08:00">2021-05-07</time>
             </span>
 
           <br>
